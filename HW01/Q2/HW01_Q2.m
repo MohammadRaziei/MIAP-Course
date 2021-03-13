@@ -4,11 +4,6 @@ image_raw = imread(fullfile(Questions_folder,'Hist.tif'));
 image_histeq = histeq(image_raw);
 image_atapthisteq = adapthisteq(image_raw, 'NumTiles', [7 7]);
 
-
-hist_image_raw = histogram(image_raw);
-hist_image_histeq = histogram(image_histeq);
-hist_image_atapthisteq = histogram(image_atapthisteq);
-
 fig = figure('Color','white', 'ToolBar', 'none', 'MenuBar', 'none', 'Name', 'Q2');
 subplot(231); imshow(image_raw);
 subplot(232); imshow(image_histeq);
