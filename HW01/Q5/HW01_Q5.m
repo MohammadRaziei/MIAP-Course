@@ -15,3 +15,13 @@ fig = create_figure('Q5');
 montage_row({image_raw, image})
 save_figure(fig, 'Q5.png')
 
+image = double(image_raw)/L; 
+% image = adapthisteq(image);
+% image = 1-sigmoid(image,10);
+% image = adapthisteq(image);
+image = (image > 0.15);
+image = uint8(image*L);
+fig = create_figure('Q5-1');
+montage_row({image_raw, image})
+save_figure(fig, 'Q5-1.png')
+

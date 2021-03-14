@@ -1,6 +1,7 @@
 clc; clear; close all; addpath('../../CommonUtils');
 Questions_folder = '../Questions/';
 image_raw = imread(fullfile(Questions_folder,'heart_ct.jpg'));
+image_raw = rgb2gray(image_raw);
 
 img_n_gaus =@(s) imnoise(image_raw, 'gaussian', 0, s);
 img_n_sp =@(d) imnoise(image_raw, 'salt & pepper', d);
@@ -43,3 +44,15 @@ for k = 1:num_filters
     create_text([num2str(filters(k)) 'x' num2str(filters(k))],[-0.02,0.5])
 end
 save_figure(fig,'imfilter (salt&pepper).png')
+
+
+fig = create_figure('medfilt2 (salt&pepper)', [0.05,0.05,.9,.9]);
+subplot(num_filters+1,1,1); montage_row(noisy_sp_images, titles_sp_cell);
+create_text('noisy images',[-0.02,0.5], 90)
+images = cell(size(noisy_sp_images));
+for k = 1:num_filters
+    for i = 1:length(images), images{i}= medfilt2(noisy_sp_images{i}, [filters(k), filters(k)]); end
+    subplot(num_filters+1,1,k+1); montage_row(images, titles_sp_cell);    
+    create_text([num2str(filters(k)) 'x' num2str(filters(k))],[-0.02,0.5])
+end
+save_figure(fig,'medfilt2 (salt&pepper).png')
