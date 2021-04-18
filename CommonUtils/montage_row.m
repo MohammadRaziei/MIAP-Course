@@ -7,7 +7,7 @@ if nargin == 2
     sp = 1/mlen;
     mlen = min(mlen, length(titles_cell));
     for i = 1:mlen
-        text((i-0.5)*sp,1.1,titles_cell{i}, 'Units', 'normalized', 'HorizontalAlignment', 'center')
+        text((i-0.5)*sp,1.05,titles_cell{i}, 'Units', 'normalized', 'HorizontalAlignment', 'center')
     end
 end
 end
