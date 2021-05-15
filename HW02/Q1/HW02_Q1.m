@@ -3,8 +3,9 @@ Questions_folder = '../Questions/';
 city_noise = im2double(imread(fullfile(Questions_folder,'city_noise.jpg')));
 city_orig  = im2double(imread(fullfile(Questions_folder,'city_orig.jpg' )));
 
+fig = create_figure;
 montage_row({city_orig, city_noise}, {'original', 'noisy'})
-
+save_figure(fig, 'original_noisy.png')
 
 SNR = @(x,y) 20*log10(norm(x,'fro')/ norm(x-y,'fro'));
 snr_total = SNR(city_orig, city_noise);
@@ -25,7 +26,7 @@ ma_p = 7; m_p = 3; g_p = 2;
 funcs = {@(x)MovingAverageFilter(x,ma_p), @(x)MeidanFilter(x,m_p), @(x)GuassianFilter(x,g_p)};
 X = {x11,x12,x21,x22};
 Y = {y11,y12,y21,y22};
-xlabels = {['GuassianFilter(x,' num2str(ma_p) ')'], ['MeidanFilter(x,' num2str(m_p) ')'], ['GuassianFilter(x,' num2str(g_p) ')']};
+xlabels = {['MovingAverageFilter(x,' num2str(ma_p) ')'], ['MeidanFilter(x,' num2str(m_p) ')'], ['GuassianFilter(x,' num2str(g_p) ')']};
 ylabels = {'up-left', 'up-right', 'down-left', 'down-right'};
 fig = create_figure('figure', [0 0 1 1]);
 for i = 1:4
@@ -38,3 +39,4 @@ for i = 1:4
         if f == 1, ylabel(ylabels{i}); end
     end
 end
+save_figure(fig, 'All-filters.png')
