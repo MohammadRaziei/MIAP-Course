@@ -10,5 +10,5 @@ p1=deltas-meandeltas;
 p2=deltascap-meandeltascap;
 num=sum(sum(p1.*p2));
 den=(sum(sum(p1.^2))).*(sum(sum(p2.^2)));
-epi=mean(num./sqrt(den))
+epi=mean(num./sqrt(den));
 end

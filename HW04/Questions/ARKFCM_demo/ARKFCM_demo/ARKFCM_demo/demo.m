@@ -13,23 +13,23 @@
 clear all
 close all
 clc
-winSizeo=[1 3 5 7 9 11 13 15];
+winSizeo=[1 3 5 7 9 11 15 29];
 
-for i=1:8
 load('noise.mat')
 %%%%%% Initialization %%%%%%%%%
+for i=1:8
 
 winSize=winSizeo(i);          % Size of the local window
 cNum=6;             % Number of clusters
-opt='average';      % Filtered image version "average", "median", or "weighted"
+opt='weighted';      % Filtered image version "average", "median", or "weighted"
 
 
 %%%%% Uncomment the desired image to run the experiment (for more details, plz refer to the paper)
 
-img=no720_100A;       % Axial slice no. 100 corrupted with 7% noise and 20% grayscale non-uniformity
+% img=no720_100A;       % Axial slice no. 100 corrupted with 7% noise and 20% grayscale non-uniformity
 % img=no720_100S;      % Sagital slice no. 100 corrupted with 7% noise and 20% grayscale non-uniformity
-% img=rice10_91A;       % Axial slice no. 91 corrupted with 10% Rician noise
-
+img=rice10_91A;       % Axial slice no. 91 corrupted with 10% Rician noise
+% 
 % img=Brats1;          % Slices no. 80 from pat266_1 (Brats challenge 2014) 
 % img=Brats2;          % Slices no. 86 from pat192_1 (Brats challenge 2014) 
 
@@ -53,7 +53,8 @@ segment=reshape(segment,r,c);
 titl=strcat('Segmentation with ' , ' "', opt, '" filtered image');
 figure(5),
 % subplot(121),imshow(img,[]), title('Input Image');
-subplot(2,4,i),imshow(segment,[]);%title(titl)
+subplot(2,4,i)
+imagesc(segment);%title(titl)
 
 clear r c cNum mMax opt t w winSize
 end;

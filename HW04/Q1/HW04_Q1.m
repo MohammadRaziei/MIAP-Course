@@ -88,7 +88,7 @@ fig = create_figure();
 for i = 1:len_q
     subplot(2,len_q, i); 
     imagesc(fix_image(U_save(i,:)));
-     axis off; set(gca,'YDir','reverse')
+    axis off; set(gca,'YDir','reverse')
     if i==1, ylabel('Soft'); end
     title(sprintf('for q=%.2g',q(i)))
     subplot(2,len_q,i+length(q));

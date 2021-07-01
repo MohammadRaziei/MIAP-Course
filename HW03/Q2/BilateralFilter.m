@@ -28,7 +28,7 @@ end
 tqdm.release();
 end
 function out = Kernel(X,Y,Gx,Gy, hx, hg)
-out = exp(-0.5 * norm(X-Y)^2 / hx) * exp(-0.5 * norm(Gx-Gy)^2 / hg);
+out = exp(-0.5 * norm(X-Y)^2 / hx^2) * exp(-0.5 * norm(Gx-Gy)^2 / hg^2);
 end
 
 

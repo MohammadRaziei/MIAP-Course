@@ -4,7 +4,7 @@ Questions_folder = '../Questions/';
 image = phantom('Modified Shepp-Logan', 500);
 image_noisy = imnoise(image, 'gaussian', 0, 0.05*var(image(:)));
 %%
-hx = 10; hg = 0.01;
+hx = 15; hg = 0.05;
 image_filt = BilateralFilter(image_noisy, hx, hg);
 %%
 clc; close all
@@ -24,8 +24,6 @@ imshowpair(image_noisy, image_filt, 'montage')
 title(['noisy-image (SNR:' num2str(snr_noisy,'%.2f') ', EPI:' num2str(epi_noisy,'%0.3f') ')' 32*ones(1,40)...
     'filtered-image (SNR:' num2str(snr_filt,'%.2f') ', EPI:' num2str(epi_filt,'%0.3f') ')'])
 save_figure(fig, ['image_filt-hx' num2str(hx) '-hg' num2str(hg) '.png'])
-
-EPI(image, image_filt)
 
 disp(['The SNR before bilateral-filter : ' num2str(snr_noisy)])
 disp(['The SNR after bilateral-filter  : ' num2str(snr_filt)])
