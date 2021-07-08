@@ -55,7 +55,7 @@ title('volshow', 'Color', 'k')
 
 subplot(132);
 timerStart1 = tic;%
-[tri, pos] = isosurface(img3D,0);
+[~, pos] = isosurface(img3D,0);
 elapsedTime1 = toc(timerStart1);%
 timerStart = tic;%
 ptCloud = pointCloud(pos);
@@ -104,3 +104,41 @@ title([sprintf('chosen point cloud (%.0f points)', size(ptCloud.Location, 1)), s
     sprintf('[time: %0.1f (ms)]', elapsedTime*1e3)], ...
     'Color', 'k', 'Interpreter','tex');
 save_figure(fig, 'results/method3-bwperim3.png')
+
+%%
+addpath('../Modules/iso2mesh')
+
+fig = create_figure('method 4 : iso2mesh', [0,0.3,1.1,0.33]);
+sgtitle('method 4 (using iso2mesh) for atlas')
+
+subplot(131);
+view(-1,45);
+pan = uipanel(fig, 'Position', get(gca, 'Position').*[1,1,1,0.75]);
+CameraPosition =  get(gca, 'CameraPosition');
+axis('off')
+volshow(uint32(atlas), 'Parent', pan, 'BackGroundColor', 'w', ...
+    'CameraPosition', CameraPosition*0.25, 'CameraTarget', [-0.2,+0.2,0], 'CameraViewAngle', 10); 
+title('volshow', 'Color', 'k')
+
+subplot(132)
+timerStart = tic;%
+opt = struct;
+opt.radbound = 3; % set the target surface mesh element bounding sphere be <3 pixels in radius
+opt.maxnode  = 5000;
+opt.maxsurf  = 0;
+method = 'cgalsurf';
+isovalues = 0.5;
+[pos, tri, regions, holes] = v2s(atlas, isovalues, opt, method);
+pos = pos + 0.5; % undo the shift that has been introduced in vol2restrictedtri
+tri = tri(:,1:3);
+elapsedTime = toc(timerStart);%
+trisurf(tri, pos(:,1), pos(:,2), pos(:,3)); view(-91,65);
+title(['surf2mesh', secondLine, ...
+    sprintf('[time: %0.1f (ms)]',elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex')
+
+subplot(133);
+wpcshow(pos); view(-91,65);
+title(sprintf('chosen point cloud (%.0f points)', size(pos, 1)), 'Color', 'k')
+save_figure(fig, 'results/method4-iso2mesh.png')
+pos = pos(:,[2 1 3]); % Mathworks isosurface indexes differently
