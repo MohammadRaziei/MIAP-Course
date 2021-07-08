@@ -105,7 +105,7 @@ title([sprintf('chosen point cloud (%.0f points)', size(ptCloud.Location, 1)), s
     'Color', 'k', 'Interpreter','tex');
 save_figure(fig, 'results/method3-bwperim3.png')
 
-%%
+%% method 4
 addpath('../Modules/iso2mesh')
 
 fig = create_figure('method 4 : iso2mesh', [0,0.3,1.1,0.33]);
