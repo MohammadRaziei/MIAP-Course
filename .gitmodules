@@ -4,3 +4,4 @@
 [submodule "Project/Modules/iso2mesh"]
 	path = Project/Modules/iso2mesh
 	url = https://github.com/fangq/iso2mesh
+	ignore = dirty
