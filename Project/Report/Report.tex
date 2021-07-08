@@ -1,0 +1,135 @@
+
+%--------------------------------------------------------------------------
+%
+%  M.Sc. Thesis
+%  [Put Your Thesis Title Here]
+%  By: [Put Your Name Here]
+%
+%--------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------
+%
+%  LaTeX Thesis Template (v2.2)
+%  By: Hamid Zarrabi-Zadeh
+%
+%  Contributors:
+%      Ehsan Emamjomeh-Zadeh
+%      Omid Gheibi
+%
+%--------------------------------------------------------------------------
+
+
+\documentclass[oneside,a4paper,12pt,table]{book}
+%\usepackage[bottom]{footmisc}
+%\usepackage{stfloats}
+%\fnbelowfloat % puts footnotes below the bottom floats
+%\makeatletter
+%\renewcommand{\fps@figure}{htp}
+%\renewcommand{\fps@table}{htp}
+%\makeatother
+\toks0{\ifvoid\footins\else\suppressfloats[b]\fi} 
+\output\expandafter{\the\toks0\the\output}
+
+%\usepackage{minipage-marginpar}
+
+\usepackage[inline]{enumitem}
+\newlist{alphinline}{enumerate*}{1}
+\setlist[alphinline]{label=(\alph*)}
+\newlist{enuminline}{enumerate*}{1}
+\setlist[enuminline]{label=(\arabic*)}
+\newlist{circlelist}{enumerate}{1}
+\setlist[circlelist,1]{label=\protect\circled{\arabic*}}
+\newlist{alphabetlist}{enumerate}{1}
+\setlist[alphabetlist]{label=\alph*)}
+\newlist{checklist}{itemize}{1}
+\setlist[checklist]{label=$\checkmark$)}
+\newlist{iteminline}{itemize*}{1}
+\setlist[iteminline]{label=$\bullet$}
+
+
+\input{styles/common.tex}
+\input{styles/custom.tex}
+\usepackage[]{ptext}
+
+\renewcommand{\chaptername}{بخش}
+%\renewcommand{\thechapter}{\tartibi{chapter}}
+
+\newcommand{\hcenter}[1]{\makebox[\textwidth][c]{#1}}
+
+\graphicspath{ {../Code/results/} }
+
+
+\newcommand{\urlSource}[1]{\lr{\scriptsize{source: \url{#1}}}}
+\newcommand{\doiSource}[1]{\lr{\scriptsize{source: \doi{#1}}}}
+\newcommand{\Doi}[1]{\lr{\doi{#1}}}
+\newcommand{\mri}{\lr{ MRI}}
+\newcommand{\mr}{\lr{ MR}}
+\newcommand{\nmr}{\lr{ NMR}}
+\newcommand{\f}[2]{$\frac{#1}{#2}$}
+\newcommand{\PE}[3]{${}_{#2}^{#3}\mathbb{#1}$}
+\newcommand{\rltext}[1]{\text{\rl{#1}}}
+\newcommand{\xLeftrightarrow}[2][]{\ext@arrow 0099\Leftrightarrowfill@{#1}{#2}}
+\begin{document}
+%\setlength{\abovedisplayskip}{0pt}
+%\setlength{\belowdisplayskip}{0pt}
+%\setlength{\abovedisplayshortskip}{0pt}
+%\setlength{\belowdisplay\shortskip}{0pt}
+
+% -------------------- Front Pages --------------------
+
+%\pagenumbering{alph}
+
+\input{front/info.tex}
+\input{front/template/title.tex}
+
+\input{front/template/besmellah.tex}
+
+% Uncomment the following line for adding signature page
+%\input{front/template/signatures.tex}
+
+%\input{front/acknowledge.tex}
+%\input{front/abstract.tex}
+
+
+% -------------------- Table of Contents --------------------
+
+
+\pagestyle{fancy}
+
+\tableofcontents \newpage
+\listoffigures \newpage
+\listoftables \newpage
+
+%\pagenumbering{arabic}
+
+% -------------------- Chapters --------------------
+
+\include{chapters/partA}
+
+
+
+% -------------------- Appendices --------------------
+
+\begin{appendix}
+%\include{chapters/appendix}
+\end{appendix}
+
+% -------------------- Bibliography --------------------
+
+
+\input{bibs/bibs.tex}
+
+
+% -------------------- English Pages --------------------
+
+
+\newgeometry{left=3cm,right=2.5cm}
+\printindex
+%\input{front/dictionary}
+%\input{front/abstract-eng.tex}
+%\input{front/template/title-eng.tex}
+
+
+% -------------------- The End! --------------------
+
+\end{document}

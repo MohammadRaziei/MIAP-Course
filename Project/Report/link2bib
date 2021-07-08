@@ -1,0 +1,36 @@
+#!/usr/bin/python3.8
+import sys
+#from urllib3 import urlopen
+from lxml.html import parse
+from datetime import datetime
+
+s = r'''@misc{%s,   
+    author = {},   
+    title = {%s},  
+    year = {%s},  
+    howpublished = {Available online: \url{%s}}  
+}'''
+
+url = sys.argv[1]
+title = ''
+try:
+    title = parse(url).find(".//title").text
+except:
+    pass
+
+name = url.split('/')
+name = [i for i in name if i not in (None, '')]
+name = '-'.join(name[-2:])
+print('\n')
+#date = datetime.today().strftime('(accessed on %#d %B %Y)')
+date = '(accessed on {dt.day} {dt:%B} {dt.year})'.format(dt=datetime.now())
+print(s % (name, title, date, url) )
+
+
+
+
+
+
+
+
+
