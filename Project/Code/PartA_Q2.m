@@ -3,45 +3,104 @@ addpath('../../CommonUtils')
 create_folder('results');
 data_dir = '../data/';
 %%
-subject_num = 20;
-img_pack = double(niftiread(fullfile(data_dir, sprintf('S%02.0f/pat%.0f.nii', subject_num, subject_num))));
-img_pack_label = double(niftiread(fullfile(data_dir, sprintf('S%02.0f/pat%.0f_label.nii', subject_num, subject_num))));
+subject_num = 6;
+[seg3D, raw3D] = readData('subject', subject_num, true);
+atlas = readData('atlas', true);
+img3D = seg3D;
+secondLine = '\newline\fontsize{8}';
+%% method 1
+close all
+p = 0.08;
+fig = create_figure('method 1 : isosurface', [0,0.3,1.1,0.4]);
+sgtitle(sprintf('method 1 (using isosurface) for subject: %i',subject_num))
 
-%%
-max_img = double(max(img_pack(:)));
-img_pack = double(img_pack) / max_img;
+subplot(131);
+timerStart = tic;
+[tri, pos] = isosurface(img3D,0);
+elapsedTime = toc(timerStart);
+trisurf(tri, pos(:,1), pos(:,2), pos(:,3)); view(-1,45);
+title(['isosurface', secondLine, ...
+    sprintf('[time: %0.1f (ms)]',elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex')
 
-img = img_pack(:,:,32);
-img_label = img_pack_label(:,:,32);
-image_labels_uinque = unique(img_pack_label);
-imshow(img_label);
-%%
-C_color = colororder;
-C = @(ind) C_color(1 + mod(ind-1,size(C_color,1)),:);
-xyzPoints = zeros(0,3);
-colors = zeros(0,3);
-img_pack_label_BW = bwperim3(img_pack_label);
-% img_pack_label_BW = bsxfun(@times, BW, img_pack_label);
-%%
-for i = 2:length(image_labels_uinque)
-[x,y,z] = ind2sub(size(img_pack_label_BW),find(img_pack_label_BW==image_labels_uinque(i)));
-xyzPoints = [xyzPoints;[x,y,z]];
-colors = [colors;repmat(C(i),size(x,1),1)];
-end
-num_points = size(xyzPoints,1);
+subplot(132);
+timerStart = tic;
+[tri, pos] = reducepatch(tri, pos, p, 'fast');
+elapsedTime = toc(timerStart);
+trisurf(tri, pos(:,1), pos(:,2), pos(:,3)); view(-1,45);
+title(['reducepatch', secondLine, ...
+    sprintf('[time: %0.1f (ms)]',elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex')
 
-p = 2.^-(0:6);
-ptClouds = cell(length(p));
-for i = 1:length(p)
-    idx = get_random_index(num_points, p(i));
-    ptClouds{i} = pointCloud(xyzPoints(idx,:), 'Color', colors(idx,:));
-end
+subplot(133);
+wpcshow(pos); view(-1,45);
+title(sprintf('chosen point cloud (%.0f points)', size(pos, 1)), 'Color', 'k')
+save_figure(fig, 'results/method1-isosurface.png')
+pos = pos(:,[2 1 3]); % Mathworks isosurface indexes differently
 
-fig = create_figure('',[0,0,1,1]);
-for i = 1:length(p)
-    subplot(1,length(p),i)
-    pcshow(ptClouds{i});
-end
-% set(fig, 'Color','w');
+%% method 2
+close all;clc
+p = 0.08;
+fig = create_figure('method 2 : isosurface', [0,0.3,1.1,0.4]);
+sgtitle(sprintf('method 2 (using isosurface) for subject: %i',subject_num))
 
+subplot(131);
+view(-1,45);
+pan = uipanel(fig, 'Position', get(gca, 'Position').*[1,1,1,0.75]);
+CameraPosition =  get(gca, 'CameraPosition');
+axis('off')
+volshow(uint32(img3D), 'Parent', pan, 'BackGroundColor', 'w', ...
+    'CameraPosition', CameraPosition*0.25, 'CameraTarget', [-0.1,0,0], 'CameraViewAngle', 10); 
+title('volshow', 'Color', 'k')
 
+subplot(132);
+timerStart1 = tic;%
+[tri, pos] = isosurface(img3D,0);
+elapsedTime1 = toc(timerStart1);%
+timerStart = tic;%
+ptCloud = pointCloud(pos);
+elapsedTime = toc(timerStart);%
+wpcshow(ptCloud); view(-1,45);
+title([sprintf('dense point cloud (%.0f points)', size(ptCloud.Location, 1)), secondLine, ...
+    sprintf('[time: %0.1f + %0.1f (ms)]',elapsedTime1*1e3, elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex')
+
+subplot(133);
+timerStart = tic;%
+ptCloud = pcdownsample(ptCloud, 'gridAverage', 1/sqrt(0.75*p));
+elapsedTime = toc(timerStart);%
+wpcshow(ptCloud); view(-1,45);
+title([sprintf('chosen point cloud (%.0f points)', size(ptCloud.Location, 1)), secondLine, ...
+    sprintf('[time: %0.1f (ms)]', elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex')
+
+save_figure(fig, 'results/method2-isosurface.png')
+pos = pos(:,[2 1 3]); % Mathworks isosurface indexes differently
+
+%% method 3
+close all
+p = 0.1;
+fig = create_figure('method 3 : bwperim3', [0.1,0.3,0.8,0.35]);
+sgtitle(sprintf('method 3 (using bwperim3) for subject: %i',subject_num))
+
+subplot(121);
+timerStart = tic;%
+img3D_BW = bwperim3(img3D);
+[x,y,z] = ind2sub(size(img3D), find(img3D_BW>0));
+ptCloud = pointCloud([x,y,z]);
+elapsedTime = toc(timerStart);%
+wpcshow(ptCloud);
+view(-91,65)
+title([sprintf('dense point cloud (%.0f points)', size(ptCloud.Location, 1)), secondLine, ...
+    sprintf('[time: %0.1f (ms)]', elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex')
+
+subplot(122);
+timerStart = tic;%
+ptCloud = pcdownsample(ptCloud, 'random', p);
+elapsedTime = toc(timerStart);%
+wpcshow(ptCloud); view(-91,65)
+title([sprintf('chosen point cloud (%.0f points)', size(ptCloud.Location, 1)), secondLine, ...
+    sprintf('[time: %0.1f (ms)]', elapsedTime*1e3)], ...
+    'Color', 'k', 'Interpreter','tex');
+save_figure(fig, 'results/method3-bwperim3.png')
