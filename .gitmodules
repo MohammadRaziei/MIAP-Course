@@ -1,0 +1,3 @@
+[submodule "Project/Modules/CDP2"]
+	path = Project/Modules/CDP2
+	url = https://github.com/MohammadRaziei/CDP2
