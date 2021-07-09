@@ -10,21 +10,23 @@ img3d_pred = circshift(atlas, 5);
 
 \begin{figure}[t!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{partB-HausdorffDist}
-	\caption{}
-	\label{fig:partB:HausdorffDist}
-\end{figure}
-
-\begin{figure}[t!]
-	\centering
 	\includegraphics[width=0.7\linewidth]{partB-pcshowpair-indices}
 	\caption{}
 	\label{fig:partB:pcshowpair-indices}
 \end{figure}
 
-\begin{equation}DSC=\frac{2|M \cap G|}{|M|+|G|}\end{equation}
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{partB-HausdorffDist}
+	\caption{}
+	\label{fig:partB:HausdorffDist}
+\end{figure}
 
-\begin{equation}JSC=\frac{|M \cap G|}{|M \cup G|}\end{equation}
+
+
+\begin{equation}\mathrm{DSC}=\frac{2|M \cap G|}{|M|+|G|}\end{equation}
+
+\begin{equation}\mathrm{JSC}=\frac{|M \cap G|}{|M \cup G|}=\frac{\mathrm{DSC}}{2-\mathrm{DSC}}\end{equation}
 
 \begin{equation}\mathrm{HD}=\max \left\{\max _{x \in \partial G} \mathbf{d}(x, \partial M), \max _{y \in \partial M} \mathbf{d}(y, \partial G)\right\}\end{equation}
 
