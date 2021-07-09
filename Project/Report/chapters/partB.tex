@@ -1,0 +1,44 @@
+\chapter{}
+
+\begin{latin}
+\begin{lstlisting}[frame=none]
+atlas = readData('atlas', true);
+img3d_true = atlas;
+img3d_pred = circshift(atlas, 5);
+\end{lstlisting}
+\end{latin}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{partB-HausdorffDist}
+	\caption{}
+	\label{fig:partB:HausdorffDist}
+\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{partB-pcshowpair-indices}
+	\caption{}
+	\label{fig:partB:pcshowpair-indices}
+\end{figure}
+
+\begin{equation}DSC=\frac{2|M \cap G|}{|M|+|G|}\end{equation}
+
+\begin{equation}JSC=\frac{|M \cap G|}{|M \cup G|}\end{equation}
+
+\begin{equation}\mathrm{HD}=\max \left\{\max _{x \in \partial G} \mathbf{d}(x, \partial M), \max _{y \in \partial M} \mathbf{d}(y, \partial G)\right\}\end{equation}
+
+\begin{equation}\operatorname{ASSD}=\frac{\sum_{x \in \partial G} \mathbf{d}(x, \partial M)+\sum_{y \in \partial M} \mathbf{d}(y, \partial G)}{|\partial G|+|\partial M|}\end{equation}
+
+
+\begin{table}[b!]
+	\centering
+	\begin{LTR}
+		\csvautotabularcenter{../Code/results/partB-table-indices1.csv}
+		\csvautotabularcenter{../Code/results/partB-table-indices2.csv}	\end{LTR}
+\end{table}
+
+
+
+
+
