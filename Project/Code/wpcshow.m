@@ -1,4 +1,4 @@
 function wpcshow(vargin)
 pcshow(vargin)
-whiteAxes
+colorAxes(gca, ones(1,3));
 end
