@@ -83,7 +83,7 @@ if largeMat
     % those that are the best value so far
     maxP = 0;           % initialize our max value
     % loop through all points in P looking for maxes
-    for p = 1:saP(1)
+    for p = 1:sP(1)
         % calculate the minimum distance from points in P to Q
         minP = min(sum( bsxfun(@minus,P(p,:),Q).^2, 2));
         if minP>maxP
