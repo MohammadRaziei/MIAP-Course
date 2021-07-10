@@ -3,7 +3,7 @@ addpath('../../CommonUtils')
 create_folder('results');
 initCDP2;
 %%
-subject_num = 6;
+subject_num = 2;
 [seg3D, raw3D] = readData('subject', subject_num, true);
 atlas = readData('atlas', true);
 
