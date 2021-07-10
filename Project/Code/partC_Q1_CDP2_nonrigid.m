@@ -1,6 +1,7 @@
 clc; close all; clear;
 addpath('../../CommonUtils')
 create_folder('results');
+initCDP2;
 %%
 subject_num = 6;
 [seg3D, raw3D] = readData('subject', subject_num, true);
@@ -23,27 +24,26 @@ legend({sprintf('Moving point cloud (%.0f points)', moving_ptCloud.Count), ...
 save_figure(fig, sprintf('results/partC1-pointCloud-before-registration-subject%.0f.png', subject_num))
 %%
 opt = struct; 
-opt.method='affine';
-[Transform, C]=cpd_register(fixed_ptCloud.Location, moving_ptCloud.Location, opt);
-%%
-% apply_affine = @(Transform, Y) Transform.s * Transform.Y * Transform.R' + Transform.t';
-tform = affine3d([[Transform.s * Transform.R';Transform.t'] [zeros(size(Transform.R,1),1);1]]);
+opt.method = 'nonrigid';
+opt.max_it = 60;
+Transform = cpd_register(fixed_ptCloud.Location, moving_ptCloud.Location, opt);
+tform = Transform2Tfrom(Transform);
 movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 %%
-movingRegFixedSize = imwarp(moving,tform,'OutputView',imref3d(size(fixed)));
+% movingRegFixedSize = imwarp(moving,tform,'OutputView',imref3d(size(fixed)));
 
-DS  = calc_loss(@binary_dice_loss, fixed, movingRegFixedSize);
-JS  = calc_loss(@binary_jaccard_loss, fixed, movingRegFixedSize);
+% DS  = calc_loss(@binary_dice_loss, fixed, movingRegFixedSize);
+% JS  = calc_loss(@binary_jaccard_loss, fixed, movingRegFixedSize);
 ASD = calc_loss(@AverageSurfaceDist, fixed_ptCloud, movingReg_ptCloud);
 HD  = calc_loss(@HausdorffDist, fixed_ptCloud.Location, movingReg_ptCloud.Location);
 %%
-fig = create_figure('before registeration', [0.3,0.2,0.6,0.55]);
+fig = create_figure('after nonrigid registeration', [0.3,0.2,0.6,0.55]);
 pcshowpair(movingReg_ptCloud, fixed_ptCloud, 'MarkerSize', 50); view(-60,30); colorAxes
 xlabel('X');ylabel('Y');zlabel('Z')
-title({sprintf('Point clouds after registration for subject %.0f as the moving one', subject_num), ...
-        sprintf('Dice score: %.3f,    Jaccard Index: %.3f,    Hausdorff Distance: %.2f,     Average Surface Distance: %.2f', DS, JS, HD, ASD)},'Color','k');
+title({sprintf('Point clouds after ''%s'' registration for subject %.0f as the moving one', opt.method, subject_num), ...
+        sprintf('Hausdorff Distance: %.2f,     Average Surface Distance: %.2f', HD, ASD)},'Color','k');
 legend({'Moving point cloud','Fixed point cloud'},'TextColor','k', 'Location','southoutside')
-save_figure(fig, sprintf('results/partC1-pointCloud-after-registration-subject%.0f.png', subject_num))
+save_figure(fig, sprintf('results/partC1-pointCloud-after-%s-registration-subject%.0f.png', opt.method, subject_num))
 %%
 % movingReg = imwarp(moving, tform);
 % disp('Calculating DDF from points ... ')

@@ -45,10 +45,16 @@
 \newlist{iteminline}{itemize*}{1}
 \setlist[iteminline]{label=$\bullet$}
 
+
+\usepackage{currfile-abspath}
 \input{styles/technical.tex}
 \input{styles/common.tex}
 \input{styles/custom.tex}
 \usepackage[]{ptext}
+
+
+\newcommand{\seecode}[2]{\href{#2}{\texttt{#1}}}
+\newcommand{\seemycode}[2]{\seecode{#1}{\thepwd../Code/#2}}
 
 \renewcommand{\chaptername}{بخش}
 %\renewcommand{\thechapter}{\tartibi{chapter}}
