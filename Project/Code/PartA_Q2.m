@@ -1,7 +1,6 @@
 clc; close all; clear all;
 addpath('../../CommonUtils')
 create_folder('results');
-data_dir = '../data/';
 %%
 subject_num = 6;
 [seg3D, raw3D] = readData('subject', subject_num, true);
@@ -116,7 +115,7 @@ view(-1,45);
 pan = uipanel(fig, 'Position', get(gca, 'Position').*[1,1,1,0.75]);
 CameraPosition =  get(gca, 'CameraPosition');
 axis('off')
-volshow(uint32(atlas), 'Parent', pan, 'BackGroundColor', 'w', ...
+labelvolshow(uint32(atlas), 'Parent', pan, 'BackGroundColor', 'w', ...
     'CameraPosition', CameraPosition*0.25, 'CameraTarget', [-0.2,+0.2,0], 'CameraViewAngle', 10); 
 title('volshow', 'Color', 'k')
 
