@@ -6,12 +6,17 @@ initCDP2;
 subject_num = 1;
 [seg3D, raw3D] = readData('subject', subject_num, true);
 atlas = readData('atlas', true);
-
 fixed = atlas; moving = seg3D;
-p = 0.05;
-moving_ptCloud = extractCloudPoints(moving, p);
-fixed_ptCloud  = extractCloudPoints(fixed, p);
-moving_ptCloud.Color = uint8([]); fixed_ptCloud.Color = uint8([]);
+%%
+fixed_labels = unique(fixed); fixed_labels = fixed_labels(2:end);
+moving_labels = unique(moving); moving_labels = moving_labels(2:end);
+common_labels = sort(intersect(fixed_labels, moving_labels));
+%%
+p = 6000;
+[~, fixed_ptCloud] = reducepatch(isosurface(ismember(fixed, common_labels)), p);
+fixed_ptCloud = pointCloud(fixed_ptCloud);
+[~, moving_ptCloud]= reducepatch(isosurface(ismember(moving,common_labels)), p);
+moving_ptCloud = pointCloud(moving_ptCloud);
 %%
 fig = create_figure('before registeration', [0.4,0.2,0.4,0.55]);
 pcshowpair(moving_ptCloud, fixed_ptCloud, 'MarkerSize',50); view(-60,30)
@@ -26,8 +31,9 @@ save_figure(fig, sprintf('results/partC1-pointCloud-before-registration-subject%
 opt = struct; 
 opt.method = 'nonrigid';
 opt.max_it = 60;
+create_figure
 Transform = cpd_register(fixed_ptCloud.Location, moving_ptCloud.Location, opt);
-tform = Transform2Tfrom(Transform);
+tform = Transform2Tform(Transform);
 movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 %%
 % movingRegFixedSize = imwarp(moving,tform,'OutputView',imref3d(size(fixed)));
@@ -36,7 +42,7 @@ movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 % JS  = calc_loss(@binary_jaccard_loss, fixed, movingRegFixedSize);
 ASD = calc_loss(@AverageSurfaceDist, fixed_ptCloud, movingReg_ptCloud);
 HD  = calc_loss(@HausdorffDist, fixed_ptCloud.Location, movingReg_ptCloud.Location);
-%%
+
 fig = create_figure('after nonrigid registeration', [0.3,0.2,0.6,0.55]);
 pcshowpair(movingReg_ptCloud, fixed_ptCloud, 'MarkerSize', 50); view(-60,30); colorAxes
 xlabel('X');ylabel('Y');zlabel('Z')

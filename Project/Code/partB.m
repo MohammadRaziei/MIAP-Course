@@ -19,11 +19,12 @@ ASD = calc_loss(@AverageSurfaceDist,    ptCloud_true, ptCloud_pred);
 HD = HausdorffDist(ptCloud_true.Location, ptCloud_pred.Location, 1);
 %%
 fig = create_figure('partB-pcshowpair-indices', [0.2, 0.2,0.6,0.6]);
-pcshowpair(ptCloud_true, ptCloud_pred); view(-25,35);
+pcshowpair(ptCloud_pred, ptCloud_true); view(-25,35);
 colorAxes
 xlabel('X');ylabel('Y');zlabel('Z')
 title(sprintf('Dice score: %.3f,    Jaccard Index: %.3f,    Hausdorff Distance: %.2f,     Average Surface Distance: %.2f', DS, JS, HD, ASD), 'Color', 'k')
-legend({'TRUE segments','PREDICTED segments'},'TextColor','k', 'Location','southoutside')
+legend({sprintf('PREDICTED segments (%.0f points)', ptCloud_pred.Count);
+    sprintf('TRUE segments (%.0f points)', ptCloud_true.Count)},'TextColor','k', 'Location','southoutside')
 save_figure(fig, 'results/partB-pcshowpair-indices.png')
 
 %%

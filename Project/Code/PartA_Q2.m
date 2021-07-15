@@ -117,7 +117,7 @@ CameraPosition =  get(gca, 'CameraPosition');
 axis('off')
 labelvolshow(uint32(atlas), 'Parent', pan, 'BackGroundColor', 'w', ...
     'CameraPosition', CameraPosition*0.25, 'CameraTarget', [-0.2,+0.2,0], 'CameraViewAngle', 10); 
-title('volshow', 'Color', 'k')
+title('labelvolshow', 'Color', 'k')
 
 subplot(132)
 timerStart = tic;%

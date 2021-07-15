@@ -1,4 +1,4 @@
-function tform = Transform2Tfrom(Transform, varargin)
+function tform = Transform2Tform(Transform, varargin)
 switch Transform.method
    case {'affine', 'rigid'}
        tform = affine3d([[Transform.s * Transform.R';Transform.t'] [zeros(size(Transform.R,1),1);1]]);

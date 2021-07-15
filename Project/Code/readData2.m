@@ -1,11 +1,11 @@
-function [seg3D, raw3D, fileInfo]=readData(method, varargin)
-% [seg3D, raw3D, info_list] = readData('atlas');
+function [seg3D, raw3D, fileInfo]=readData2(method, varargin)
+% [seg3D, raw3D, info_list] = readData2('atlas');
 % [___] = readData('subject', num)
 % [___] = readData(___, toDouble) % convert segment labels to double from uint8 (default:true)
 %
 validateattributes(method, {'char'}, {'nonempty', 'scalartext'})
 ToDouble = true;
-data_dir = '../data/';
+data_dir = '../data2/';
 switch lower(method)
     case 'subject'
         if nargin < 2, error('Not enough input arguments.'); end
