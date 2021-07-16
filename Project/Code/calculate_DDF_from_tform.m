@@ -6,7 +6,7 @@ if nargin < 5 || isempty(verbose), verbose = false; end
 
 [xq,yq,zq] = meshgrid(1:sz(2), 1:sz(1), 1:sz(3));
 method = 'linear';
-if justInConvexHull, ExtrapolationMethod = 'none'; else, ExtrapolationMethod = method; end
+if justInConvexHull, ExtrapolationMethod = 'none'; else, ExtrapolationMethod = 'nearest'; end
 
 DDF_T = cell(3,1);
 for i = 1:3
