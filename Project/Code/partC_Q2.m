@@ -1,76 +1,60 @@
-clc; close all; clear all;
+clc; close all; clear;
 addpath('../../CommonUtils')
 create_folder('results');
-data_dir = '../data/';
+initCDP2;
 %%
 subject_num = 6;
-[img_pack_label, img_pack] = readData('subject', subject_num, true);
-
-atlas = readData('atlas', true);
-
-
-p = 0.05;
-[moving_xyzPoints, moving_labels, moving_ptCloud] = extractCloudPoints(img_pack_label, p);
-[fixed_xyzPoints, fixed_labels, fixed_ptCloud] = extractCloudPoints(atlas, p);
-
-moving_ptCloud.Color = uint8([]); fixed_ptCloud.Color = uint8([]);
-
-pcshowpair(moving_ptCloud,fixed_ptCloud,'MarkerSize',50)
+[seg3D, raw3D] = readData2('subject', subject_num, true);
+atlas = readData2('atlas', true);
+fixed = atlas; moving = seg3D;
+%%
+fixed_labels = unique(fixed); fixed_labels = fixed_labels(2:end);
+moving_labels = unique(moving); moving_labels = moving_labels(2:end);
+common_labels = sort(intersect(fixed_labels, moving_labels));
+%%
+p = 6000;
+[~, fixed_ptCloud] = reducepatch(isosurface(ismember(fixed, common_labels)), p);
+[~, moving_ptCloud]= reducepatch(isosurface(ismember(moving,common_labels)), p);
+get_label(fixed, fixed_ptCloud)
+fixed_ptCloud = pointCloud(fixed_ptCloud);
+moving_ptCloud = pointCloud(moving_ptCloud);
+%%
+fig = create_figure('before registeration', [0.4,0.2,0.4,0.55]);
+pcshowpair(moving_ptCloud, fixed_ptCloud, 'MarkerSize',50); view(175,-5)
+colorAxes
 xlabel('X');ylabel('Y');zlabel('Z')
-title('Point clouds before registration')
-legend({'Moving point cloud','Fixed point cloud'},'TextColor','w', 'Location','southoutside')
-
+title(sprintf('Point clouds before registration for subject %.0f as the moving one', subject_num), 'Color','k');
+legend({sprintf('Moving point cloud (%.0f points)', moving_ptCloud.Count), ...
+    sprintf('Fixed point cloud (%.0f points)', fixed_ptCloud.Count)}, ...
+    'TextColor','k', 'Location','southoutside')
+save_figure(fig, sprintf('results/partC2-pointCloud-before-registration-subject%.0f.png', subject_num))
 %%
-if false
-% % Init full set of options %%%%%%%%%%
-opt.method='nonrigid'; % use nonrigid registration
-% opt.beta=2;            % the width of Gaussian kernel (smoothness)
-% opt.lambda=3;          % regularization weight
-
-% opt.viz=1;              % show every iteration
-opt.outliers=0.;       % noise weight
-opt.fgt=0;              % do not use FGT (default)
-opt.normalize=1;        % normalize to unit variance and zero mean before registering (default)
-opt.corresp=0;          % compute correspondence vector at the end of registration (not being estimated by default)
-
-opt.max_it=20 ;         % max number of iterations
-% opt.tol=1e-10;          % tolerance
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% 
-[Transform, C]=cpd_register(fixed_xyzPoints,moving_xyzPoints, opt);
-end
+opt = struct; 
+opt.method = 'nonrigid';
+opt.max_it = 60;
+create_figure
+Transform = cpd_register(fixed_ptCloud.Location, moving_ptCloud.Location, opt);
+tform = Transform2Tform(Transform);
+movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 %%
-tic
-% [tform2,movingReg, rmse] = pcregistercpd(moving_ptCloud, fixed_ptCloud, 'Transform', 'rigid');
-[tform2,movingReg, rmse] = pcregistercpd(moving_ptCloud, fixed_ptCloud, 'Verbose', true);
-toc
-% movingReg = pctransform(movingDownsampled,tform);
-%%
-pcshowpair(movingReg,fixed_ptCloud,'MarkerSize',50)
+% movingRegFixedSize = imwarp(moving,tform,'OutputView',imref3d(size(fixed)));
+
+% DS  = calc_loss(@binary_dice_loss, fixed, movingRegFixedSize);
+% JS  = calc_loss(@binary_jaccard_loss, fixed, movingRegFixedSize);
+ASD = calc_loss(@AverageSurfaceDist, fixed_ptCloud, movingReg_ptCloud);
+HD  = calc_loss(@HausdorffDist, fixed_ptCloud.Location, movingReg_ptCloud.Location);
+
+fig = create_figure('after nonrigid registeration', [0.3,0.2,0.6,0.55]);
+pcshowpair(movingReg_ptCloud, fixed_ptCloud, 'MarkerSize', 50); view(175,-5); colorAxes
 xlabel('X');ylabel('Y');zlabel('Z')
-title('Point clouds after registration')
-legend({'Moving point cloud','Fixed point cloud'},'TextColor','w', 'Location','southoutside')
+title({sprintf('Point clouds after ''%s'' registration for subject %.0f as the moving one', opt.method, subject_num), ...
+        sprintf('Hausdorff Distance: %.2f,     Average Surface Distance: %.2f', HD, ASD)},'Color','k');
+legend({'Moving point cloud','Fixed point cloud'},'TextColor','k', 'Location','southoutside')
+save_figure(fig, sprintf('results/partC2-pointCloud-after-%s-registration-subject%.0f.png', opt.method, subject_num))
 %%
-clc
-[xq,yq,zq] = meshgridas(img_pack_label);
-method = 'linear';
-[m,n,p] = size(img_pack_label);
-DDF=zeros(m,n,p,3);
-DDF_T = struct;
-DDF_T.x = scatteredInterpolant(moving_xyzPoints, tform2(:,1), method);
-DDF_T.y = scatteredInterpolant(moving_xyzPoints, tform2(:,2), method);
-DDF_T.z = scatteredInterpolant(moving_xyzPoints, tform2(:,3), method);
-DDF(:,:,:,1)= DDF_T.x(xq,yq,zq);
-DDF(:,:,:,2)= DDF_T.y(xq,yq,zq);
-DDF(:,:,:,3)= DDF_T.z(xq,yq,zq);
-% %%
-% DDF(:,:,:,1) = griddata(moving_xyzPoints(:,1), moving_xyzPoints(:,2), moving_xyzPoints(:,3), tform2(:,1), xq, yq, zq, method);
-% DDF(:,:,:,2) = griddata(moving_xyzPoints(:,1), moving_xyzPoints(:,2), moving_xyzPoints(:,3), tform2(:,2), xq, yq, zq, method);
-% DDF(:,:,:,3) = griddata(moving_xyzPoints(:,1), moving_xyzPoints(:,2), moving_xyzPoints(:,3), tform2(:,3), xq, yq, zq, method);
+% movingReg = imwarp(moving, tform);
+% disp('Calculating DDF from points ... ')
+DDF = calculate_DDF(movingReg_ptCloud, moving_ptCloud, size(moving));
+% disp('DDF calculation is finished.')
+%%
 
-%%
-reg_label = imwarp(img_pack_label,DDF);
-% reg_label = round(reg_label);
-volshow(round(reg_label), 'Colormap', colormap('hot'))
-% movingReg = pctransform(moving_ptCloud,tform); 
