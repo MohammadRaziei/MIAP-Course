@@ -3,7 +3,7 @@ addpath('../../CommonUtils')
 create_folder('results');
 initCDP2;
 %%
-subject_num = 11;
+subject_num = 2;
 [seg3D, raw3D] = readData2('subject', subject_num, true);
 atlas = readData2('atlas', true);
 fixed = atlas; moving = seg3D;
@@ -39,45 +39,17 @@ tform = Transform2Tform(Transform);
 movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 %%
 % movingRegFixedSize = imwarp(moving,tform,'OutputView',imref3d(size(fixed)));
-
-
-ASD = calc_loss(@AverageSurfaceDist, fixed_ptCloud, movingReg_ptCloud);
-HD  = calc_loss(@HausdorffDist, fixed_ptCloud.Location, movingReg_ptCloud.Location);
-
-fig = create_figure('after nonrigid registeration', [0.3,0.2,0.6,0.55]);
-pcshowpair(movingReg_ptCloud, fixed_ptCloud, 'MarkerSize', 50); view(75,-5); colorAxes
-xlabel('X');ylabel('Y');zlabel('Z')
-title({sprintf('Point clouds after ''%s'' registration for subject %.0f as the moving one', opt.method, subject_num), ...
-        sprintf('Hausdorff Distance: %.2f,     Average Surface Distance: %.2f', HD, ASD)},'Color','k');
-legend({'Moving point cloud','Fixed point cloud'},'TextColor','k', 'Location','southoutside')
-save_figure(fig, sprintf('results/partC1-pointCloud-after-%s-registration-subject%.0f.png', opt.method, subject_num))
-%%
 % movingReg = imwarp(moving, tform);
-% disp('Calculating DDF from points ... ')
-DDF = calculate_DDF_from_tform(tform, moving_ptCloud, size(moving), true);
-% disp('DDF calculation is finished.')
+disp('Calculating DDF from points ... ')
+tic
+DDF = calculate_DDF_from_tform(tform, moving_ptCloud, size(moving), [], true);
+toc
+disp('DDF calculation is finished.')
 %%
-
 movingReg = imwarp(moving,DDF, 'nearest');
-
-%%
-DS = calc_loss(@binary_dice_loss, fixed, movingReg);
-JS = calc_loss(@binary_jaccard_loss, fixed, movingReg);
-SI = calc_intersection_spines(moving, DDF, common_labels, true);
-
-fig = create_figure('after nonrigid registeration', [0.3,0.2,0.2,0.55]);
-
 fixedC = logical(fixed)*10;
 movingRegC = logical(movingReg)*30;
-% cmap(1,:) = [0,1,0]; cmap(2,:) = [0.5,0.5,0]; cmap(3,:) = [1,0,0];
 cmap = [1,1,1; 0,1,0; 0.5,0.5,0; 1,0,0];
-labelvolshow(movingRegC * 0.5 + fixedC * 0.5, 'BackgroundColor', 'w', 'LabelColor', cmap, ...
-        'CameraPosition', CameraPosition*0.6, 'CameraTarget', [0,0,-0.1], 'CameraViewAngle', 10); 
-
-title(sprintf('Dice Score: %.2f,     Jaccard Score: %.2f,     Spines Intersection: %.2f', DS, JS, SI));
-save_figure(fig, sprintf('results/partC1-labelvolshow-after-%s-registration-subject%.0f.png', opt.method, subject_num))
-%%
-
 
 DS = calc_loss(@binary_dice_loss, fixed, movingReg);
 JS = calc_loss(@binary_jaccard_loss, fixed, movingReg);
@@ -85,23 +57,22 @@ SI = calc_intersection_spines(moving, DDF, common_labels, true);
 ASD = calc_loss(@AverageSurfaceDist, fixed_ptCloud, movingReg_ptCloud);
 HD  = calc_loss(@HausdorffDist, fixed_ptCloud.Location, movingReg_ptCloud.Location);
 
-
-fig = create_figure('', [0.2,0.3,0.6,0.5]);
+fig = create_figure('after nonrigid registeration', [0.2,0.3,0.6,0.5]);
 
 subplot(121);
 view(175,-5);
 pan = uipanel(fig, 'Position', get(gca, 'Position').*[1,1,1,0.9], 'BorderType', 'none');
 CameraPosition = get(gca, 'CameraPosition');
 axis('off')
-labelvolshow(movingRegC * 0.5 + fixedC * 0.5, 'Parent', pan, 'BackgroundColor', 'w', 'LabelColor', cmap, ...
+labelvolshow(movingRegC * 0.5 + fixedC * 0.5, 'LabelColor', cmap, 'Parent', pan, 'BackgroundColor', 'w', ...
         'CameraPosition', CameraPosition * 0.6, 'CameraTarget', [0, 0, -0.1], 'CameraViewAngle', 10); 
 
-
-% fig = create_figure('after nonrigid registeration', [0.3,0.2,0.6,0.55]);
 subplot(122);
 pcshowpair(movingReg_ptCloud, fixed_ptCloud, 'MarkerSize', 50); view(75,-5); colorAxes
 xlabel('X');ylabel('Y');zlabel('Z')
-legend({'Moving point cloud','Fixed point cloud'},'TextColor','k', 'Location','southoutside')
+legend({sprintf('Moving point cloud (%.0f points)', moving_ptCloud.Count);
+    sprintf('Fixed point cloud (%.0f points)', fixed_ptCloud.Count)},...
+    'TextColor','k', 'Location','southoutside')
 
 sgtitle({sprintf('Point clouds after ''%s'' registration for subject %.0f as the moving one', opt.method, subject_num);
         sprintf('Dice Score: %.2f,     Jaccard Score: %.2f,     Spines Intersection: %.0f', DS, JS, SI);
