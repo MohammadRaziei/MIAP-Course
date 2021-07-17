@@ -1,13 +1,24 @@
 \chapter{خواندن داده‌ها و آماده‌سازی تصاویر}
 
-\ptext[1]
 
 \section{قسمت اول}
+داده های مورد نظر از سایت \url{http://sina.sharif.edu/~fatemizadeh/data/} دانلود شده‌اند. 
+البته این داده ها دارای مشکلات مرتبط با سایز و رزولوشن بودند که نسخه بدون مشکل آن ها از آدرس 
+\url{https://www.dropbox.com/s/rh30qyheb06j3yv/corrected_all.zip}
+دانلود شده اند و این دو دسته داده به ترتیب در پوشه های
+ \seecode{data}{../data/} و  \seecode{data2}{../data2/}
+ قرار گرفتند.
+برای نمایش آن از دستور \verb|niftiread| و \verb|niftiinfo| مطلب استفاده شده است. از آنجایی که اسم داده ها ساختارمند بود، تابع \Seemycode{readData.m}  
+ برای خواندن ساده‌تر و آماده سازی داده ها استفاده شده است. این تابع به شکل های زیر قابل استفاده است.
+\begin{latin}
+\begin{lstlisting}
+[seg3D, raw3D, info_list] = readData('atlas');
+[___] = readData('subject', num)
+[___] = readData(___, toDouble) % convert segment labels to double from uint8 (default:true) 
+\end{lstlisting}
+\end{latin}
 
-%\lr{\dothis{a}}
 
-\ptext[2-3]
-\cite{fieldtrip-prepare_mesh_segmentation.m}
 
 \begin{figure}[t!]
 	\centering
@@ -19,23 +30,116 @@
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{partA_Q1_showSubject6}
+	\subfigure[]{
+		\includegraphics[width=0.7\linewidth]{partA_Q1_showSubject6}
+		\label{subfig:partaq1showsubject6}
+	}
+	\subfigure[]{
+		\includegraphics[width=0.7\linewidth]{partA_Q1_showSubject10}
+		\label{subfig:partaq1showsubject10}
+	}
+	\subfigure[]{
+		\includegraphics[width=0.7\linewidth]{partA_Q1_showSubject20}
+		\label{subfig:partaq1showsubject20}
+	}
 	\caption{}
-	\label{fig:partaq1showsubject6}
-\end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{partA_Q1_showSubject10}
-	\caption{}
-	\label{fig:partaq1showsubject10}
-\end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{partA_Q1_showSubject20}
-	\caption{}
-	\label{fig:partaq1showsubject20}
+	\label{fig:partA1:showSubjects}
 \end{figure}
 
+
+
+
+
+
+با اجرای فایل \Seemycode{partA\_Q1.m} می‌توان اطلس را مطابق شکل \ref{fig:partA:Q1:showAtlas} 
+مشاهده کرد. همچنین پس از اجرای این کد تصاویر آورده شده در شکل \ref{fig:partA1:showSubjects} نیز قابل رویت می‌باشند.
+
+%\lr{\dothis{a}}
+
+کد \Seemycode{partA\_Q1\_nifti2mp4.m} مشابه تصاویری را مشابه دستور \verb|sliceviewr| متلب (اما پیشرفته تر) به ما می‌دهد که به صورت فایل \lr{mp4} در پوشه‌ی \seecode{‌‌Code/results/nifti2mp4}{../Code/results/nifti2mp4} به ازای تمام سابجکت ها رسم شده است.
+
+همچنین برای یکسان سازی رنگ لیبل دادگان و مشاهده سایز پیکسل های هر کدام و نمایش آن ها در هر طرف کد \Seemycode{partA\_Q1\_total.m} نوشته شده است. جهت استاندارد سازی نمایش از رنگ بندی موجود در جدول \ref{table:colorbar}
+استفاده شده است.
+
+\begin{table}[h!]
+	\centering
+	\begin{latin}
+		\vspace{1em}
+		\begin{adjustbox}{angle=90}
+			\begin{tabular}{c}
+				\csvreader[]
+				{../Code/results/niftishow/partA1-labels.csv}{1=\Labels,2=\cR,3=\cG,4=\cB}{
+					\cellcolor[rgb]{\cR,\cG,\cB}
+					\textbf{\textcolor{white}{\rotatebox{-90}{\!\!\!\!\Labels\space\space}}} \\
+				}%
+			\end{tabular}
+		\end{adjustbox}
+		\vspace{-1em}
+	\end{latin}
+	\caption{}\label{table:colorbar}
+\end{table}
+
+پس از اجرا خروجی های زیر را می‌توان مشاهده کرد که تصویر های گویا تری از داده را به ما می‌دهند. شکل \ref{fig:partA1-atlas}
+تصویر اطلس را به ازای این نمایش جدید، نشان می‌دهد و همچنین برای برخی از سابحکت ها نیز این نمایش جدید و جامع در شکل 	\ref{fig:partA1-showSubjects-nifti} رسم شده است.
+
+
+
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{../Code/results/niftishow/partA1-atlas}
+	\caption{}
+	\label{fig:partA1-atlas}
+\end{figure}
+
+\begin{figure}[t!]
+	\centering
+	\subfigure[]{
+		\includegraphics[width=0.8\linewidth]{../Code/results/niftishow/partA1-subject2}
+		\label{subfig:partA1-subject2}}
+	\subfigure[]{
+		\includegraphics[width=0.8\linewidth]{../Code/results/niftishow/partA1-subject3}
+		\label{subfig:partA1-subject3}}
+	\subfigure[]{
+		\includegraphics[width=0.8\linewidth]{../Code/results/niftishow/partA1-subject4}
+		\label{subfig:partA1-subject4}}
+	\caption{}
+	\label{fig:partA1-showSubjects-nifti}
+\end{figure}
+
+\begin{note}
+برای آن که تصاویر آورده شده در اشکال \ref{fig:partA1-showSubjects-nifti} و \ref{fig:partA1-atlas} به صورت خودکار نمایش داده شوند در فایل \Seemycode{partA\_Q1\_total.m} اسلایس ها را از ترکیب خطی وسط ابعاد تصویر سه بعدی و مرکزجرم شکل سگمنت شده انتخاب کردم. مرکز جرم با استفاده از تابع \Seemycode{centerofgravity.m} بدست آمده است.
+\end{note}
+
+\begin{note}
+تمام تصاویر این قسمت از پوشه \Seemycode{results}
+و با استفاده از لاتک در درون فایل \lr{pdf} قرار داده شده است. همچنین جدول \ref{table:colorbar} نیز به صورت خودکار با توجه به لیبل های اجتماع تصاویر داده شده ساخته شده است. برای این کار با استفاده از کد \Seemycode{partA\_Q1\_total.m} اجتماع تمام لیبل ها بدست آمد سپس خود آن لیبل ها به همراه کد \lr{rgb } رنگشان درون فایل \seemycode{partA1-labels.csv}{results/niftishow/partA1-labels.csv} ذخیره شد و در نهایت نیز توسط پکیج \texttt{csvsimple} درون این فایل قرار گرفت.
+\end{note}
+
+\section{قسمت دوم}
+
+
+پوینت کلاد ها در کاربرد های پردازش تصویر و پردازش های گرافیکی کاربرد های زیادی دارند.
+\cite{wiki-Point_cloud}
+برای استخراج پوینت کلود از روی داده های سگمنت شده چهار روش زیر توسط نویسنده پیشنهاد شده است. در تمام این روش ها هدف آن است که پوینت کلود را اولا از روی سطوح مهره ها انتخاب شود چرا که برای توصیف حجم داخل آن کافی هستند و ویژگی های اصلی  مهره ها بر روی آن قرار دارند و طبق  \cite{CoherentPointDrift} نیز باید نقاطی انتخاب شود که چنین ویژگی های خاصی دارند.
+
+بنابراین تمام این چهار روش سعی بر استخراج نقاط از روی رویه‌ی مهره ها دارند. در سه تای اول این روش ها برای استخراج نقاط روی سطوح، حجم را مش بندی میکنند. از آنجا که در هنگم مش بندی سعی میشود که بهینه ترین طریقه نمایش سطح با استفاده از مش ها انتخاب شود، این روش معین
+\LTRfootnote{determinestic}
+خواهد بود و به ازای اجرا های مختلف جواب یکسانی را خواهد داد. بنابراین اگر دو تصویر در اختیار داشته باشیم که دقیقا یکسان باشند، نقاط انتخاب شدشان روی سطح نیز دقیقا یکسان خواهد بود که این اتفاق مطلوبی است. 
+
+\begin{note}
+	مش بندی یک حجم همان اتفاقیست که در مفهوم \lr{Boundary element method}
+\cite{wiki-Boundary_element_method}
+بررسی می‌شود. بنابراین برای دریافت ایده های موجود برای این راه حل با بررسی سورس کد کتاب‌خانه معروف \lr{fieldtrip} در گیت هاب \cite{fieldtrip-prepare_mesh_segmentation.m} این کار انجام گرفته است.
+\end{note}
+
+\begin{note}
+برای مشاهده خروجی های مربوط به این قسمت لازم است تا فایل \Seemycode{partA\_Q2.m}
+را اجرا شود و خروجی های مربوط به هر قسمت پس از اجرای آن ظاهر شود و این قسمت نیز مانند قسمت قبل چون که عکس ها مستقیما از خروجی کد متلب لود میشوند با تغییر خروجی متلب و تولید دوباره این \lr{pdf}، تصاویر متفاوتی را می‌توان مشاهده کرد.
+\end{note}
+\paragraph{روش اول}
+ در این روش ابتدا با استفاده از دستور \texttt{isosurface} نقاط مربوط به رویه‌ی شکل را به همراه طریقه اتصال آن نقاط(که به صورت مثلثی است) را استخراج میکنیم و سپس مطابق شکل \ref{fig:partA:Q2:method1-isosurface}
+ با استفاده از دستور \texttt{reducepatch} تعداد مثلث های تشکیل دهنده آن مش را کاهش می‌دهیم. این کاهش تعداد مثلث ها نیز به گونه ای است تا در نهایت نیز باز هم بهترین نمایش را از حجم مورد نظر داشته باشد و در پایان نیز رئوس مثلث های انتخاب شده را به عنوان نقاط مد نظر انتخاب میکنیم.
 
 
 
@@ -47,6 +151,15 @@
 	\label{fig:partA:Q2:method1-isosurface}
 \end{figure}
 
+\begin{note}
+	با توجه به پیاده سازی \lr{BEM} در \cite{fieldtrip-prepare_mesh_segmentation.m}
+خط 184، این موضوع اشاره شده است که خروجی دستور \texttt{isosurface} مولفه ی اول و دوم را جابجا تحویل می‌دهد. لذا باید هنگام پیاده سازی به این مورد توجه نمود.
+\end{note}
+
+\paragraph{روش دوم}
+این روش نیز مشابه قسمت قبلی از طریق دستور \texttt{isosurface}
+استخراج نقاط اولیه صورت گرفته است و برای کاهش آن ابتدا از روی آن نقاط اولیه پوینت کلادشان را با استفاده از دستور \texttt{pointCloud} متلب می‌سازیم. سپس با استفاده از دستور \texttt{pcdownsample} متلب آن ها را کاهش می‌دهیم که به دو شیوه انتخاب گرید سایز مناسب و یا روش رندم امکان پذیر است. البته با استفاده از دستور \texttt{select} متلب نیز این کار امکان پذیر بود اما آن روش احتمال ایجاد خطا در بین فاصله بین نقاط را افزایش میداد. خروجی حاصل از این روش در شکل \ref{fig:partA:Q2:method2-isosurface} قابل مشاهده است.
+
 \begin{figure}[t!]
 	\centering
 	\hcenter{\includegraphics[width=1.2\linewidth]{method2-isosurface}}
@@ -57,6 +170,16 @@
 
 
 
+\begin{note}
+	در این دو روش گفته شده، از استخراج نقاط از رویه و تا انتخاب تعدادی از نقاط با استفاده از توابع آماده خود متلب انجام پذیرفته است که از مزایای این دو روش محسوب می‌شود.
+\end{note}
+
+
+\paragraph{روش سوم}
+
+در این روش به شکل دیگری قصد داریم تا نقاط روی سطوح را استخراج کنیم. برای این کار مشابه دستور \texttt{bwperim} متلب که مرز تصاویر باینری دو بعدی را استخراج میکند، تابع \Seemycode{bwperim3.m} طراحی شد تا برای این تصاویری که آنان چند لیبل مختلف در سه بعد دارند نیز کار کند. خروجی حاصل از این روش در شکل \ref{fig:partA:Q2:method3-bwperim3}
+قابل مشاهده است. در حقیقت نحوه نتخاب نقاط اولیه در این روش با دیگر روش ها کاملا متفاوت است و اصلا به دنبال استخراج مش روی سطح نیستیم. برای ادامه کار می‌توان از دستور \texttt{pcdownsample} استفاده کرد. همانگونه که در تصویر \ref{fig:partA:Q2:method3-bwperim3} مشاهده می‌شود، این روش بسیار سریع است که مهمترین مزیت این روش محسوب می‌شود.
+
 \begin{figure}[t!]
 	\centering
 	\hcenter{\includegraphics[width=1.2\linewidth]{method3-bwperim3}}
@@ -64,6 +187,16 @@
 	\caption{روش سوم}
 	\label{fig:partA:Q2:method3-bwperim3}
 \end{figure}
+
+\paragraph{روش چهارم}
+
+
+در این روش نیز هدف مش بندی سطح به روش مثلثی است. برای این کار با استفاده از کتابخانه
+\lr{\href{http://iso2mesh.sourceforge.net/}{iso2mesh}}
+\cite{iso2mesh}
+انجام پذیرفته است و سپس  رئوس همان مش ها انتخاب به عنوان پوینت کلاد هدف انتخاب شده اند. خروجی حاصل شده از این روش را نیز در شکل 
+\ref{fig:partA:Q2:method4-iso2mesh}
+قابل مشاهده است.
 
 
 \begin{figure}[t!]
@@ -75,10 +208,14 @@
 \end{figure}
 
 
+\begin{note}\label{note:volocity-compare}
+	با بررسی نتایج موجود در این چهار روش می‌توان دریافت که از لحاظ سرعت می‌توان رابطه‌ی زیر را بینشان دید.
+	\vspace{-1em}
+	\[\rltext{سرعت روش سوم} \gg \rltext{سرعت روش چهارم} > \rltext{سرعت روش دوم} > \rltext{سرعت روش اول}\]
+\end{note}
 
-
-
-
+در مجموع تقریبا همواره صرف نظر از کندی روش اول از آن روش در پیاده سازی بخش \ref{ch:impl}
+ استفاده شده است و تعداد نقاط را برای آن که هم دقت نهایی خوب باشد (تعداد نقاط زیاد) و هم درون یابی برای بدست آوردن \lr{Dense Deformation field} بهتر و دقیق‌تر باشد(تعداد نقاط زیاد) و هم سرعت انجام انطباق قابل قبول باشد (تعداد نقاط کم) چیزی بین 3000 الی 5000 نقطه انتخاب شده است.
 
 
 

@@ -45,6 +45,7 @@
 
 
 \usepackage{booktabs,longtable}
+\usepackage{adjustbox}
 \usepackage{csvsimple} % For csv importing.
 
 \makeatletter
@@ -57,6 +58,18 @@
 	table foot=\\\hline,
 	late after last line=\csv@tablefoot\end{tabular}\csv@posttable,
 	command=\csvlinetotablerow},
+}
+\makeatother
+\makeatletter
+\csvset{
+	autotabularcentercolorheader/.style={
+		file=#1,
+		after head=\csv@pretable\begin{tabular}{|*{\csv@columncount}{c|}}\csv@tablehead,
+			table head=\hline\rowcolor{headerColor}\csvlinetotablerow\\\hline,
+			late after line=\\,
+			table foot=\\\hline,
+			late after last line=\csv@tablefoot\end{tabular}\csv@posttable,
+		command=\csvlinetotablerow},
 }
 \makeatother
 
@@ -73,7 +86,9 @@
 	\stringcases
 	{#1}%
 	{%
-		{a}{\readfromcsvs{autotabularcenter}{#2}}%
+		{default}{\readfromcsvs{autotabularcenter}{#2}}%
+		{simplecenter}{\csvstyleread{autotabularcenter}{#2}}%	
+		{centercolorheader}{\csvstyleread{autotabularcentercolorheader}{#2}}%
 		{b}{now this is b}%
 		{c}{you want me to do c?}%
 	}%
