@@ -3,7 +3,7 @@ addpath('../../CommonUtils')
 create_folder('results');
 initCDP2;
 %%
-subject_num = 7;
+subject_num = 6;
 [seg3D, raw3D] = readData2('subject', subject_num, true);
 atlas = readData2('atlas', true);
 fixed = atlas; moving = seg3D;
@@ -12,11 +12,11 @@ fixed_labels = unique(fixed); fixed_labels = fixed_labels(2:end);
 moving_labels = unique(moving); moving_labels = moving_labels(2:end);
 common_labels = sort(intersect(fixed_labels, moving_labels));
 %%
-p = 0.1;
+p = 6000;
 [~, fixed_ptCloud] = reducepatch(isosurface(ismember(fixed,common_labels)), p);
-fixed_ptCloud = fixed_ptCloud(:,[2 1 3]);
+% fixed_ptCloud = fixed_ptCloud(:,[2 1 3]);
 [~, moving_ptCloud] = reducepatch(isosurface(ismember(moving,common_labels)), p);
-moving_ptCloud = moving_ptCloud(:,[2 1 3]);
+% moving_ptCloud = moving_ptCloud(:,[2 1 3]);
 fixed_ptCloud = pointCloud(fixed_ptCloud);
 moving_ptCloud = pointCloud(moving_ptCloud);
 %%
@@ -32,7 +32,7 @@ save_figure(fig, sprintf('results/partC1-pointCloud-before-registration-subject%
 %%
 opt = struct; 
 opt.method = 'nonrigid';
-opt.max_it = 100;
+opt.max_it = 50;
 create_figure
 Transform = cpd_register(fixed_ptCloud.Location, moving_ptCloud.Location, opt);
 tform = Transform2Tform(Transform);
@@ -42,10 +42,11 @@ movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 % movingReg = imwarp(moving, tform);
 disp('Calculating DDF from points ... ')
 tic
-DDF = calculate_DDF_from_tform(tform, moving_ptCloud, size(moving), [], true);
+DDF = calculate_DDF_from_tform(tform, moving_ptCloud, size(moving), true, true);
+DDF(isnan(DDF)) = 0;
 toc
 disp('DDF calculation is finished.')
-%%
+%
 movingReg = imwarp(moving,DDF, 'nearest');
 fixed_points = fixed_ptCloud.Location;
 movingReg_points = movingReg_ptCloud.Location;

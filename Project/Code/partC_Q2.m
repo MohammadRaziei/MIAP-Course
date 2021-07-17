@@ -12,13 +12,15 @@ fixed_labels = unique(fixed); fixed_labels = fixed_labels(2:end);
 moving_labels = unique(moving); moving_labels = moving_labels(2:end);
 common_labels = sort(intersect(fixed_labels, moving_labels));
 %%
+
+%%
 fixed_ptCloud = [];
 moving_ptCloud = [];
 tform = [];
-p = 6000;
+p = 3000;
 opt = struct;
 opt.method = 'nonrigid';
-opt.max_it = 60;
+opt.max_it = 100;
 opt.vis = 0;
 tic
 for i = 1 : length(common_labels)
@@ -44,11 +46,11 @@ movingReg_ptCloud = pctransform(moving_ptCloud, tform);
 % movingReg = imwarp(moving, tform);
 disp('Calculating DDF from points ... ')
 tic
-DDF = calculate_DDF_from_tform(tform, moving_ptCloud, size(moving), [], true);
+DDF = calculate_DDF_from_tform(tform, moving_ptCloud, size(moving), true, true); DDF(isnan(DDF)) = false;
 toc
 disp('DDF calculation is finished.')
 %%
-movingReg = imwarp(moving,DDF, 'nearest');
+movingReg = imwarp(moving, DDF, 'nearest');
 fixedC = logical(fixed)*10;
 movingRegC = logical(movingReg)*30;
 cmap = [1,1,1; 0,1,0; 0.5,0.5,0; 1,0,0];
